@@ -69,11 +69,11 @@ colthree_form <-
     "Mayor_promotion3y ~ Mayor_plan + 
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | 
-    City_Code_1 + Year"
+    City_Code + Year"
   )
 column_three <- feols(as.formula(colthree_form), 
                       sub_novice,
-                      cluster = "City_Code_1")
+                      cluster = "City_Code")
 
 # Column Four
 colfour_form <-
@@ -86,6 +86,85 @@ colfour_form <-
 column_four <- feols(as.formula(colfour_form), 
                      sub_novice,
                      cluster = "City_Code")
+
+
+# Regression Table---------------------
+# models
+reg_cols <- list("Model1" = column_one, 
+                 "Model2" = column_two, 
+                 "Model3" = column_three, 
+                 "Model4" = column_four)
+
+#variable renaming
+coefficient_names <- list(
+  'Mayor_plan' = 'Subway Approval'
+)
+
+summary_row <- tribble(
+  ~ term,
+  ~ Model1,
+  ~ Model2,
+  ~ Model3,
+  ~ Model4,
+  "City FE",
+  " ",
+  " ",
+  " ",
+  " ",
+  "Year FE",
+  " ",
+  " ",
+  " ",
+  " ")
+
+#combining it all to make model summary table
+# options("modelsummary_factory_default" = "gt")
+model_table <-
+  modelsummary(reg_cols,
+               output = "gt",
+               gof_map = "nobs",
+               coef_map = coefficient_names,
+               add_rows = summary_row)
+
+# extracting the data to get into gt format
+gt_table <- model_table$`_data`
+
+# creating checkmarks
+checkmark <- "<span style=\"color:black\">&check;</span>"
+#sadface <- "<span style=\"color:red\">&#128546;</span>"
+#<h3>&check;
+gt_table |>
+  gt(rowname_col = "row") |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model1", "Model2",
+                  "Model3", "Model4"),
+      rows = Model1 == " "
+    ),
+    fn = function(x) paste(x, checkmark)
+  )
+
+
+gt_table |>
+  gt() |>
+  tab_spanner(
+    label = ""
+  )
+
+?rows_add
+
+#typeof(model_table)
+gt_table |>
+  gt() |>
+  tab_header(
+    title = "S&P 500")
+  rows_add(
+    "Subway Approval" = "City FE",
+    "(1)" = "D",
+    "(2)" = "Z",
+    "(3)" = "",
+    "(4)" = ""
+  )
 
 
 # Parallel Trends Assumption --------------------
@@ -203,5 +282,7 @@ fit |>
   geom_errorbar(aes(ymin = estimate - 2 * std.error, ymax = estimate + 2 *
                       std.error),
                 width = 0) +
+  geom_vline(xintercept = -1, linetype = 2) +
   geom_hline(yintercept = 0, linetype = 2) +
-  labs(y = "Effects of Approval on Mayoral Promotion in 3 years")
+  labs(y = "Effects of Approval on Mayoral Promotion in 3 years", x = "") +
+  theme_classic() 
