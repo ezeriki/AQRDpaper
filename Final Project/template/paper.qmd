@@ -25,34 +25,45 @@ abstract: |
 
 # Introduction
 
-Political representation is a topic of major importance as increasingly, all over the world, there are actions being taken to have governmental and corporate leadership accurately represent the constituents that it serves or that keeps it operational. Political representation directly relates to the global phenomenon of citizens preferring candidates who share similar characteristics (cite Sevi). Sevi highlighted a reason for this, which is that citizens might believe that those similar to them are more likely to act in their best interest and enact policies that benefit their particular demographic.Different measures of representation include ethnicity, race, age, and many more dimensions (cite Sevi). However, representation and citizens voice in the matter only goes as far as the franchise reach. In China, which operates under a non-democratic government, politicians' political superiors take on the role of the voter (cite Lei & Zhou). In their paper, Lei & Zhou examine how local political transactions that occur between Provincial Party Secretaries and City Mayors contribute to China's overly high long term infrastructure investment relative to the rest of the world. This serves as a case study to examine heterogeneity across political parties at play in China on the provincial and city level, and further test the hypotheses that those voters, or in this case, those who influence the election or promotion of political leaders, are more likely to select those whom they are similar to.   @scheve2012  [@scheve2012]. **SK: This paragraph uses a footnote and a citation.**
+Political representation is a topic of major importance as increasingly, all over the world, there are actions being taken to have governmental and corporate leadership accurately represent the constituents that it serves or that keeps it operational. Political representation directly relates to the global phenomenon of citizens preferring candidates who share similar characteristics (cite Sevi). Sevi highlighted a reason for this, which is that citizens might believe that those similar to them are more likely to act in their best interest and enact policies that benefit their particular demographic.Different measures of representation include ethnicity, race, age, and many more dimensions (cite Sevi). However, representation and citizens voice in the matter only goes as far as the franchise reach. In China, which operates under a non-democratic government, politicians' political superiors take on the role of the voter (cite Lei & Zhou). In their paper, Lei & Zhou examine how local political exchanges that occur between Provincial Party Secretaries and City Mayors contribute to China's overly high long-term infrastructure investment relative to the rest of the world. This serves as a case study to examine heterogeneity across political parties at play in China on the provincial and city level, and further test the hypotheses that those voters, or in this case, those who influence the election or promotion of political leaders, are more likely to select those whom they are similar to.   @scheve2012  [@scheve2012]. **SK: This paragraph uses a footnote and a citation.**
 
 [^1]: "Global Inequality." 2022. *Inequality.org*. <https://inequality.org/facts/global-inequality/>.
 
 A particular demographic, which has quite a standard trend in politics all around the world is age. Age is a unique demographic marker, as unlike other human characteristics such as gender or ethnicity, it is constantly changing along with time (cite S&S). According to Stockemer & Sundström, political elite globally comprise of wealthy middle aged men (cite them). This is particularly troublesome, because just as age changes with time, so does ideologies, beliefs and viewpoints on life change with age, and as a result, young adults are usually at odds with older generations on policy and political solutions, and are therefore not adequately represented by their governments in their current state. (cite S&S) [@acemoglu2015democracy; @albertus2014gaming]. Lei & Zhou in their analysis of private cooperation among Chinese politicians provide an opportunity to identify whether age groups that fall on the margins of the status quo "politician age" are disadvantaged in any way in this political market system.  **SK: This paragraph uses multiple citations in a group. See <https://quarto.org/docs/authoring/footnotes-and-citations.html> for more.**
 
 
-Another related factor to age as regard
+Another factor that relates to the topic of age in politics is tenure. The longer that a politician can remain in office translates into more exposure to political connections and opportunities to prove one's capability and prowess to superiors. For younger politicians, this is especially important, as they may need even more time to prove their expertise due to obstacles in initially securing opportunities based soley on their age, limited past tenure, and perceived inexperience. For much older politicians, we have the exact opposite problem, in which they almost have a fast approaching deadline to achieve results while in office. However, since older leaders have had more time tenured and therefore are perceived to be more experienced, it might not be as difficult for them to secure opportunities, such as infrastructure contracts. (Li et al) actually established a negative tenure effect on public infrastructure investment, in which a politician is more likely to invest more in public infrastructure at the beginning of their career, when they do not have many years of tenure under their belt and have much more to benefit from achieving positive results throughout the rest of their career. As a result, it would be expected that younger politicians would have the expectation of longer tenure years, which would have positive correlation with investments and therefore future promotion; whereas, older politicians would less tenured years, which could lead to less investment and therefore less chances of future promotion. This paper explores the intersection of tenure and the heterogeneous effects of age as a major player in the game between public infrastructure and private returns for a politician. 
 
 # Analysis
 
-The intuition of my proposal can be seen in @fig-example. The original authors' measure of democracy changes abruptly at universal suffrage, but my measures of Equal Access to Power and Civil Society to Power changes more gradually. \[**SK: See qmd code for an example to insert figures, add a caption, and add a label that you can then reference in text**\]
+The intuition of my proposal can be seen in @fig-agedist. The age distribution of both Provincial Party Secretaries and City Mayors overlap at ages roughly between 45 - 59 years, with the bulk of the overlap occurring between 52 - 57. As a result, it would make sense that city mayors who are closer in age to PPS(s) would have a higher chance of getting promotions based on the hypothesis proopsed earlier. The distribution also \[**SK: See qmd code for an example to insert figures, add a caption, and add a label that you can then reference in text**\]
 
-![Time Trends for Different Measures of Democratic Participation in the United Kingdom, 1816-2000](figures/image7.png){#fig-example width="50%"}
+![Age distribution of Provincial Party Secretaries and City Mayors ](figures\age_distribution.png){#fig-agedist width="50%"}
 
 Using data collected from V-Dem of the two new measures of democratization, joint with the data used by [@scheve2012], I investigate the relationship between democracies that have given enough political power to their lower socioeconomic classes and redistributive taxation. I employ two main models. The first model uses a differences-in-differences approach that estimates the causal effect of democracy and wars of mass mobilization on inheritance taxation with an ordinary least squares regression represented by: $$T_{it} = \alpha + \beta_{1}D_{i,t - 1} + \beta_{2}W_{i,t - 1} + \gamma X_{i,t - 1} + \eta_{i} + \theta_{t} + \epsilon_{it},$$ where $T_{it}$ is the top inheritance tax rate for direct descendants for country *i* in year *t*.
 
 # Results
 
-@tbl-main shows the results of the regression. I find some evidence for the importance of considering inequities in access to power when investigating what causes increases in inheritance taxation. While inconsistent, some models find that the effect of the lagged Equal Access to Power index on top inheritance taxation is statistically significant.
+@tbl-replication shows the main results of the Lei & Zhou original regression, which shows a statistically significant positive effect between a mayor securing an approval for Subway infrastructure and promotion of that mayor in 3 years. 
+
 
 \[**SK: The quarto code below puts in a figure into a markdown table and calls it a table. Inserting tables are more complicated than inserting figures, so a hack is to include the image of the table as I have done here. Alternatively, you can also ask R to generate tables in a .tex format and ask quarto read it in as a tex file. See Appendix.**\]
 
 |                         |
 |:------------------------|
-| ![](figures/image3.png) |
+| ![](tables\did_replication.png) |
 
-: War Mobilization, Democracy, and Inheritance Taxation, 1816-2000 {#tbl-main}
+: Replication of Lei & Zhou Difference in Difference design {#tbl-replication}
+
+
+@tbl-extension further expands this effect to include the effect of age categories and mayor's tenure.
+
+|                         |
+|:------------------------|
+| ![](tables\did_extension.png) |
+
+: Replication of Lei & Zhou Difference in Difference design {#tbl-extension}
+
 
 \[**SK: Do not delete the two lines of quarto code that starts with `::: {#refs}`. This produces a list of references.**\]
 

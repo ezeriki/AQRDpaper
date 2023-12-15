@@ -5,7 +5,7 @@ library(haven)
 library(modelsummary)
 library(gt)
 library(dplyr)
-library('fastDummies')
+#library('fastDummies')
 library(panelView)
 library(fixest)
 library(glue)
@@ -101,70 +101,120 @@ coefficient_names <- list(
 )
 
 summary_row <- tribble(
-  ~ term,
-  ~ Model1,
-  ~ Model2,
-  ~ Model3,
-  ~ Model4,
-  "City FE",
-  " ",
-  " ",
-  " ",
-  " ",
-  "Year FE",
-  " ",
-  " ",
-  " ",
-  " ")
+  ~ term, ~ Model1, ~ Model2, ~ Model3, ~ Model4,
+  "City FE", "Yes", "Yes", "Yes", "Yes",
+  "Year FE", "Yes", "Yes", "Yes", "Yes",
+  "Mayor Controls", "No", "Yes", "Yes", "Yes",
+  "City Controls", "No", "No", "Yes", "Yes",
+  "Province-year FE", "No", "No", "No", "Yes"
+  )
 
 #combining it all to make model summary table
 # options("modelsummary_factory_default" = "gt")
+# Model Summary Table ------------
+ms_notes <- "* p < 0.05, ** p < 0.01, *** p < 0.001
+<br>Standard Errors clustered at the city level in parentheses.
+<br>Mayor Controls include gender, ethnicity, past political connections, and univeristy experience.
+<br>City controls include GDP size and growth, fiscal revenue, and population.
+<br>FE: Fixed Effects"
+
+# putting into model summary
 model_table <-
   modelsummary(reg_cols,
                output = "gt",
                gof_map = "nobs",
                coef_map = coefficient_names,
-               add_rows = summary_row)
+               add_rows = summary_row,
+               stars = c(
+                 '*' = .05,
+                 '**' = .01,
+                 '***' = .001
+               ))
 
 # extracting the data to get into gt format
+# class(gt_table)
 gt_table <- model_table$`_data`
+# moving number of observations to bottom row
+gt_table <- gt_table |>
+  arrange(replace(row_number(), 3, n() + 1))
 
-# creating checkmarks
+# creating checkmarks -------------------------
 checkmark <- "<span style=\"color:black\">&check;</span>"
 #sadface <- "<span style=\"color:red\">&#128546;</span>"
 #<h3>&check;
-gt_table |>
+replication_tbl <- gt_table |>
   gt(rowname_col = "row") |>
+  opt_table_font(stack = "old-style") |>
+  tab_options(column_labels.font.weight = "bolder",
+              table.font.size = 12,
+              table.font.weight = "bold",
+              data_row.padding = px(1)) |>
+  tab_header(
+    title = md("Subway Approval and Mayoral Promotion")) |>
+  tab_spanner(
+    label = "Mayor Promoted within Three Years",
+    columns = c(Model1, Model2, Model3, Model4)
+  ) |>
+  cols_label(
+    Model1 = "(1)",
+    Model2 = "(2)",
+    Model3 = "(3)",
+    Model4 = "(4)") |>
+  tab_footnote(
+    footnote = html(ms_notes)) |>
   text_transform(
     locations = cells_body(
       columns = c("Model1", "Model2",
                   "Model3", "Model4"),
-      rows = Model1 == " "
+      rows = Model1 == "Yes" &  Model2 == "Yes" & Model3 == "Yes" & Model4 == "Yes"
     ),
-    fn = function(x) paste(x, checkmark)
-  )
+    fn = function(x) checkmark
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model2", "Model3", "Model4"),
+      rows = Model1 == "No" & Model2 == "Yes" & Model3 == "Yes" & Model4 == "Yes"
+    ),
+    fn = function(x) checkmark) |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model3", "Model4"),
+      rows = Model1 == "No" & Model2 == "No" & Model3 == "Yes" & Model4 == "Yes"
+    ),
+    fn = function(x) checkmark) |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model4"),
+      rows = Model1 == "No" & Model2 == "No" & Model3 == "No" & Model4 == "Yes"
+    ),
+    fn = function(x) checkmark) |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model1"),
+      rows = Model1 == "No" 
+    ),
+    fn = function(x) " ") |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model2"),
+      rows = Model2 == "No" 
+    ),
+    fn = function(x) " ") |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model3"),
+      rows = Model3 == "No" 
+    ),
+    fn = function(x) " ") |>
+  tab_options(table_body.hlines.color = "transparent")  |>
+  tab_style(style = cell_borders(sides = c("bottom"),  weight = px(1)),
+            locations = cells_body(rows = c(7)))
 
+# saving table
+replication_tbl |>
+  gtsave("tables/did_replication.png")
+# ------------End of GT Table --------------------
 
-gt_table |>
-  gt() |>
-  tab_spanner(
-    label = ""
-  )
-
-?rows_add
-
-#typeof(model_table)
-gt_table |>
-  gt() |>
-  tab_header(
-    title = "S&P 500")
-  rows_add(
-    "Subway Approval" = "City FE",
-    "(1)" = "D",
-    "(2)" = "Z",
-    "(3)" = "",
-    "(4)" = ""
-  )
 
 
 # Parallel Trends Assumption --------------------
