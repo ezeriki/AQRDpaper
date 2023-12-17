@@ -5,15 +5,21 @@ library(haven)
 library(modelsummary)
 library(gt)
 library(dplyr)
-library('fastDummies')
+# library('fastDummies')
 library(panelView)
 library(fixest)
 library(glue)
+library(rlang)
+library(ggplot2)
+#library(stringr)
+#library(extrafont)
+library(marginaleffects)  #plot_slopes function
 
 # Loading data ---------------------------------------
 subway_analysis_use <- read_dta("data/subway_analysis_use.dta")
 
 
+# cleaning up age data --------------
 subway_analysis_use <- subway_analysis_use |> 
   mutate(age_br = case_when(Mayor_age %in% 31:35 ~ "30-35",
                             Mayor_age %in% 36:40 ~ "35-40",
@@ -43,113 +49,83 @@ mayor_cont <- c("gender2", "race6", "Mayor_age", "Mayor_c_edu", "Mayor_c_central
 # city level one year lagged control variables and provice leader 
 base_cont <- c("lpop_1", "lgdp_1", "lrev_1", "GRP_growth_1")
 
+# wfact = cut(employee$age, 3, labels=c('Young', 'Medium', 'Aged'))
+# table(wfact)
+
 # Column one Extension -------------
 # age control
-column_one_ex1 <-
+column_onex1 <-
   feols(
-    Mayor_promotion3y ~ Mayor_plan + factor(age_br) | City_Code + Year ,
+    Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br | City_Code + Year ,
     data = sub_novice,
     cluster = "City_Code"
   )
 
-# Tenure control and interaction
-column_one_ex2 <-
-  feols(
-    Mayor_promotion3y ~ Mayor_plan + Mayor_c_tenure |
-      City_Code + Year ,
-    data = sub_novice,
-    cluster = "City_Code"
-  )
+summary(column_onex1)
 
-# Just Tenure interaction ASK SEAN
-column_one_ex2_5 <-
+# Tenure and age interaction
+column_onex2 <-
   feols(
-    Mayor_promotion3y ~ Mayor_plan + Mayor_plan:Mayor_c_tenure |
+    Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br + Mayor_c_tenure |
       City_Code + Year ,
     data = sub_novice,
     cluster = "City_Code"
   )
-
-# Tenure and age control
-column_one_ex3 <-
-  feols(
-    Mayor_promotion3y ~ Mayor_plan + factor(age_br) + Mayor_c_tenure |
-      City_Code + Year ,
-    data = sub_novice,
-    cluster = "City_Code"
-  )
+#summary(column_onex1)
 
 # Column TWO Extension -------------
 # age alone
 coltwo_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + factor(age_br) +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br +
     {str_c(mayor_cont, collapse = ' + ')} | City_Code + Year"
   )
 column_twoex1 <- feols(as.formula(coltwo_form), 
                        sub_novice,
                        cluster = "City_Code")
 
-# including effect of major tenure
+# including effect of  age and major tenure
 coltwo_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + Mayor_c_tenure +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br + Mayor_c_tenure +
     {str_c(mayor_cont, collapse = ' + ')} | City_Code + Year"
   )
 column_twoex2 <- feols(as.formula(coltwo_form), 
                        sub_novice,
                        cluster = "City_Code")
-
-# including effect of  age and major tenure
-coltwo_form <-
-  glue(
-    "Mayor_promotion3y ~ Mayor_plan + factor(age_br) + Mayor_c_tenure +
-    {str_c(mayor_cont, collapse = ' + ')} | City_Code + Year"
-  )
-column_twoex3 <- feols(as.formula(coltwo_form), 
-                       sub_novice,
-                       cluster = "City_Code")
+#summary(column_twoex1)
 
 # Column three Extension -------------
 # age alone
 colthree_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + factor(age_br) +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br +
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | City_Code + Year"
   )
-column_threeex1 <- feols(as.formula(colthree_form), 
+column_threex1 <- feols(as.formula(colthree_form), 
                          sub_novice,
                          cluster = "City_Code")
 
-# including effect of major tenure
+
+# effect of age and tenure
 colthree_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + Mayor_c_tenure +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br + Mayor_c_tenure +
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | City_Code + Year"
   )
 column_threex2 <- feols(as.formula(colthree_form), 
                         sub_novice,
                         cluster = "City_Code")
-
-# effect of age and tenure
-colthree_form <-
-  glue(
-    "Mayor_promotion3y ~ Mayor_plan + factor(age_br) + Mayor_c_tenure +
-    {str_c(mayor_cont, collapse = ' + ')} +
-    {str_c(base_cont, collapse = ' + ')} | City_Code + Year"
-  )
-column_threex3 <- feols(as.formula(colthree_form), 
-                        sub_novice,
-                        cluster = "City_Code")
+#summary(column_threex3)
 
 
 # Column four Extension -------------
 # age alone
 colfour_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + factor(age_br) +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br +
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | 
     City_Code + Year:pro_code"
@@ -157,11 +133,13 @@ colfour_form <-
 column_fourex1 <- feols(as.formula(colfour_form), 
                         sub_novice,
                         cluster = "City_Code")
+summary(column_fourex1)
 
-# including effect of major tenure
+
+# including effect of age and major tenure
 colfour_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + Mayor_c_tenure +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*age_br + Mayor_c_tenure +
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | 
     City_Code + Year:pro_code"
@@ -170,28 +148,15 @@ column_fourex2 <- feols(as.formula(colfour_form),
                         sub_novice,
                         cluster = "City_Code")
 
-# including effect of age and major tenure
-colfour_form <-
-  glue(
-    "Mayor_promotion3y ~ Mayor_plan + factor(age_br) + Mayor_c_tenure +
-    {str_c(mayor_cont, collapse = ' + ')} +
-    {str_c(base_cont, collapse = ' + ')} | 
-    City_Code + Year:pro_code"
-  )
-column_fourex3 <- feols(as.formula(colfour_form), 
-                        sub_novice,
-                        cluster = "City_Code")
-
 
 # Regression Tables -------------------
-# age and tenure combined
+
+# relabeling coefficient names
 coefficient_names <- list(
   'Mayor_plan' = 'Subway Approval',
-  'factor(age_br)30-35' = '30-35',
-  'factor(age_br)35-40' = '35-40',
-  'factor(age_br)40-45' = '40-45',
-  'factor(age_br)45-50' = '45-50',
-  'factor(age_br)55-60' = '55-60',
+  'Mayor_plan:age_br40-45' = 'Subway Approval + Age bracket (40-45)',
+  'Mayor_plan:age_br45-50' = 'Subway Approval + Age bracket (45-50)',
+  'Mayor_plan:age_br55-60' = 'Subway Approval + Age bracket (55-60)',
   'Mayor_c_tenure' = 'Mayor Tenure'
 )
 # Long Format ---------------------
@@ -271,45 +236,43 @@ model_table <- modelsummary(models,
 
 
 # Wide Format ------------------
-reg_cols_age <- list("Model1" = column_one_ex1, 
-                     "Model2" = column_one_ex1, 
-                     "Model3" = column_one_ex1, 
-                     "Model4" = column_twoex1,
-                     "Model5" = column_twoex1,
-                     "Model6" = column_twoex1,
-                     "Model7" = column_twoex1,
-                     "Model3" = column_threeex1,
-                     "Model3" = column_threeex1,
-                     "Model3" = column_threeex1,
-                     "Model3" = column_threeex1,
-                     "Model4" = column_fourex1,
-                     "Model4" = column_fourex1,
-                     "Model4" = column_fourex1)
-# ------------- later -----------
+reg_cols <- list(
+  "Model1" = column_onex1,
+  "Model2" = column_twoex1,
+  "Model3" = column_threex1,
+  "Model4" = column_fourex1,
+  "Model5" = column_onex2,
+  "Model6" = column_twoex2,
+  "Model7" = column_threex2,
+  "Model8" = column_fourex2
+)
+
+# summary rows
+summary_row <- tribble(
+  ~ term, ~ Model1, ~ Model2, ~ Model3, ~ Model4, 
+  ~ Model5, ~ Model6, ~ Model7, ~ Model8,
+  "City FE", "Yes", "Yes", "Yes", "Yes",
+  "Yes", "Yes", "Yes", "Yes",
+  "Year FE", "Yes", "Yes", "Yes", "Yes",
+  "Yes", "Yes", "Yes", "Yes",
+  "Mayor Controls", " ", "Yes", "Yes", "Yes",
+  " ", "Yes", "Yes", "Yes",
+  "City Controls", " ", " ", "Yes", "Yes",
+  " ", " ", "Yes", "Yes",
+  "Province-year FE", " ", " ", " ", "Yes",
+  " ", " ", " ", "Yes"
+)
 
 
-#variable renaming
-# # age alone
-# coefficient_names_age <- list(
-#   'Mayor_plan' = 'Subway Approval',
-#   'factor(age_br)30-35' = '30-35',
-#   'factor(age_br)35-40' = '35-40',
-#   'factor(age_br)40-45' = '40-45',
-#   'factor(age_br)45-50' = '45-50',
-#   'factor(age_br)55-60' = '55-60'
-# )
-# 
-# # mayor tenure alone
-# coefficient_names_tenure <- list(
-#   'Mayor_plan' = 'Subway Approval',
-#   'Mayor_c_tenure' = 'Mayor Tenure'
-# )
+model_table <- modelsummary(reg_cols,  
+                            coef_map = coefficient_names,
+                            output = "gt",
+                            gof_map = "nobs",
+                            add_rows = summary_row,
+                            stars = c('*' = .05, 
+                                      '**' = .01, 
+                                      '***' = .001))
 
-# GT table rendering ------------
-
-
-#combining it all to make model summary table
-# options("modelsummary_factory_default" = "gt")
 # Model Summary Table ------------
 ms_notes <- "* p < 0.05, ** p < 0.01, *** p < 0.001
 <br>Standard Errors clustered at the city level in parentheses.
@@ -321,11 +284,9 @@ ms_notes <- "* p < 0.05, ** p < 0.01, *** p < 0.001
 # extracting the data to get into gt format
 # class(gt_table)
 gt_table <- model_table$`_data`
-gt_table <- gt_table |>
-  select(-1)
 # moving number of observations to bottom row
-# gt_table <- gt_table |>
-#   arrange(replace(row_number(), 3, n() + 1))
+gt_table <- gt_table |>
+  arrange(replace(row_number(), 11, n() + 1))
 
 # making gt table
 extension_tbl <- gt_table |>
@@ -333,82 +294,94 @@ extension_tbl <- gt_table |>
   opt_table_font(stack = "old-style") |>
   tab_options(column_labels.font.weight = "bolder",
               table.font.size = 12,
-              table.font.weight = "normal",
+              table.font.weight = "bold",
               data_row.padding = px(2)) |>
   tab_header(
     title = md("Heterogenous Age Effects inclusive of Mayor Tenure Control")) |>
   tab_spanner(
     label = "Mayor Promoted within Three Years",
+    columns = c(Model1, Model2, Model3, Model4, 
+                Model5, Model6, Model7, Model8)
+  ) |>
+  tab_spanner(
+    label = "Without Tenure Control",
     columns = c(Model1, Model2, Model3, Model4)
+  ) |>
+  tab_spanner(
+    label = "With Tenure Control",
+    columns = c(Model5, Model6, Model7, Model8)
   ) |>
   cols_label(
     Model1 = "(1)",
     Model2 = "(2)",
     Model3 = "(3)",
-    Model4 = "(4)") |>
+    Model4 = "(4)",
+    Model5 = "(5)",
+    Model6 = "(6)",
+    Model7 = "(7)",
+    Model8 = "(8)") |>
   tab_footnote(
     footnote = html(ms_notes)) |>
-  tab_row_group(
-    label = "Age Group",
-    rows = 1:12) |>
-  tab_row_group(label = "Mayor Tenure",
-                rows = 13:16) |>
-  tab_row_group(label = "Age Group + Mayor Tenure",
-                rows = 17:30) |>
   tab_options(table_body.hlines.color = "transparent") 
 
 # adding in check marks --------------
 checkmark <- "<span style=\"color:black\">&check;</span>"
 
+
 extension_tbl <- extension_tbl |>
   text_transform(
     locations = cells_body(
-      columns = c("Model1", "Model2",
-                  "Model3", "Model4"),
-      rows = Model1 == "Yes" &  Model2 == "Yes" & Model3 == "Yes" & Model4 == "Yes"
-    ),
+      columns = c("Model1"),
+      rows = Model1 == "Yes"),
     fn = function(x) checkmark
   ) |>
   text_transform(
     locations = cells_body(
-      columns = c("Model2", "Model3", "Model4"),
-      rows = Model1 == "No" & Model2 == "Yes" & Model3 == "Yes" & Model4 == "Yes"
-    ),
-    fn = function(x) checkmark) |>
-  text_transform(
-    locations = cells_body(
-      columns = c("Model3", "Model4"),
-      rows = Model1 == "No" & Model2 == "No" & Model3 == "Yes" & Model4 == "Yes"
-    ),
-    fn = function(x) checkmark) |>
-  text_transform(
-    locations = cells_body(
-      columns = c("Model4"),
-      rows = Model1 == "No" & Model2 == "No" & Model3 == "No" & Model4 == "Yes"
-    ),
-    fn = function(x) checkmark) |>
-  text_transform(
-    locations = cells_body(
-      columns = c("Model1"),
-      rows = Model1 == "No" 
-    ),
-    fn = function(x) " ") |>
-  text_transform(
-    locations = cells_body(
       columns = c("Model2"),
-      rows = Model2 == "No" 
-    ),
-    fn = function(x) " ") |>
+      rows = Model2 == "Yes"),
+    fn = function(x) checkmark
+  ) |>
   text_transform(
     locations = cells_body(
       columns = c("Model3"),
-      rows = Model3 == "No" 
-    ),
-    fn = function(x) " ") 
+      rows = Model3 == "Yes"),
+    fn = function(x) checkmark
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model4"),
+      rows = Model4 == "Yes"),
+    fn = function(x) checkmark
+  ) |> 
+  text_transform(
+    locations = cells_body(
+      columns = c("Model5"),
+      rows = Model5 == "Yes"),
+    fn = function(x) checkmark
+  ) |> 
+  text_transform(
+    locations = cells_body(
+      columns = c("Model6"),
+      rows = Model6 == "Yes"),
+    fn = function(x) checkmark
+  ) |> 
+  text_transform(
+    locations = cells_body(
+      columns = c("Model7"),
+      rows = Model7 == "Yes"),
+    fn = function(x) checkmark
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = c("Model8"),
+      rows = Model8 == "Yes"),
+    fn = function(x) checkmark
+  )
+    
 
 # saving table
 extension_tbl |> 
-  gtsave("tables/did_extension.png")
+  gtsave("template/tables/did_extension.png")
 
 # Age distributions ------------------
 # Density plots
@@ -419,15 +392,111 @@ sub_dist_long <- sub_dist |>
   pivot_longer(cols = c("Mayor_age", "PS_age") , names_to = "Age_group") 
 
 
-
 # plotting age density distribution
 # if you want to fill with color, use fill
 
-ggplot(sub_dist_long, aes(x = value, colour = Age_group)) + 
+ggplot(sub_dist_long, aes(x = value, fill = Age_group)) + 
   geom_density(alpha = 0.5) +
   labs(y = "Density", x = "Age") +
   scale_color_manual(name="",
                      values=c("black","blue"),
                      labels=c("Mayor Age","PPS Age")) +
 theme_bw()
+
+
+
+# Margins----------------
+library(sjPlot)
+library(ggplot2)
+theme_set(theme_sjplot())
+library(sjmisc)
+library(rlang)
+library(stringr)
+library(extrafont)
+
+
+modelplot(models = reg_cols, 
+          coef_map = coefficient_names
+)
+
+library(marginaleffects)
+library(ggplot2)
+
+#mod <- feols(hp ~ vs * am | carb, data = mtcars)
+#Mayor_plan + Mayor_plan*age_br
+
+# extract raw data for plotting
+dat <- plot_slopes(column_onex1, 
+                   variables = "Mayor_plan", 
+                   condition = "age_br")
+
+# plotting the effects
+plot_slopes(column_onex1, 
+            variables = "Mayor_plan", 
+            condition = "age_br")
+
+# OR
+
+plot_predictions(column_onex1, condition = c("age_br", "Mayor_plan"))
+
+# OR
+# -----------------
+# convert categorical (binary/factor) variable to numeric
+# dat$age_br <- as.numeric(as.character(dat$age_br))
+# 
+# ggplot(dat, aes(x = age_br, y = estimate, ymin = conf.low, ymax = conf.high)) +
+#   geom_line() +
+#   geom_ribbon(alpha = .2) +
+#   theme_minimal() +
+#   labs(y = "Slopes")
+# 
+# 
+# ggplot(dat, aes(x = age_br, y = estimate)) +
+#   geom_line() 
+# ------------------------
+
+
+# Checking for outliers ------------------
+sub_40_45 <-sub_novice |>
+  filter(age_br == "40-45")
+
+sub_40_45$Mayor_plan
+
+mean(sub_40_45$Mayor_plan)
+mean(sub_40_45$Mayor_promotion3y)
+mean(sub_40_45$Mayor_c_tenure, na.rm = TRUE)
+
+sub_45_50 <-sub_novice |>
+  filter(age_br == "45-50")
+mean(sub_45_50$Mayor_plan)
+mean(sub_45_50$Mayor_promotion3y)
+mean(sub_45_50$Mayor_c_tenure, na.rm = TRUE)
+
+sub_50_55 <-sub_novice |>
+  filter(age_br == "50-55")
+mean(sub_50_55$Mayor_plan)
+mean(sub_50_55$Mayor_promotion3y)
+mean(sub_50_55$Mayor_c_tenure, na.rm = TRUE)
+
+sub_55_60 <-sub_novice |>
+  filter(age_br == "55-60")
+mean(sub_55_60$Mayor_plan)
+mean(sub_55_60$Mayor_promotion3y)
+mean(sub_55_60$Mayor_c_tenure, na.rm = TRUE)
+
+sub_30_35 <-sub_novice |>
+  filter(age_br == "30-35")
+sub_30_35$Mayor_plan
+mean(sub_30_35$Mayor_plan)
+mean(sub_30_35$Mayor_promotion3y)
+mean(sub_30_35$Mayor_c_tenure, na.rm = TRUE)
+
+sub_35_40 <-sub_novice |>
+  filter(age_br == "35-40")
+sub_35_40$Mayor_plan
+mean(sub_35_40$Mayor_plan)
+mean(sub_35_40$Mayor_promotion3y)
+mean(sub_35_40$Mayor_c_tenure, na.rm = TRUE)
+
+
 

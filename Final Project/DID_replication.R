@@ -212,7 +212,7 @@ replication_tbl <- gt_table |>
 
 # saving table
 replication_tbl |>
-  gtsave("tables/did_replication.png")
+  gtsave("template/tables/did_replication.png")
 # ------------End of GT Table --------------------
 
 
