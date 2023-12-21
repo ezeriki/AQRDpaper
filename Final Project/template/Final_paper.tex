@@ -222,7 +222,7 @@ mayors in China. Furthermore, my study confirms that there are no
 statistically significant differences based on age.
 \end{abstract}
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, breakable, interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, interior hidden, sharp corners, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
 
 
@@ -355,8 +355,6 @@ like tenure and age.
 \hypertarget{data-analysis}{%
 \section{Data \& Analysis}\label{data-analysis}}
 
-This study specifically examines the impact of obtaining approval for a
-subway infrastructure plan on a city mayor's future promotion prospects.
 The examination draws upon data obtained from the \citet{lei2022private}
 study, utilizing sources such as the China City Statistical Yearbook,
 China Urban Construction Yearbook, Chinese Political Elite Database,
@@ -408,17 +406,15 @@ this age bracket concurrently being in their 3rd or 4th years in office,
 a period associated with elevated promotion probabilities. To ascertain
 the specific effect of the interaction between age and subway approvals
 on future promotions, controlling for tenure becomes crucial in order to
-isolate that particular effect.
-
-To align the data with my hypothesis, I leverage the existing Age
-variable in \citet{lei2022private}'s dataset to construct a distinct
-grouping variable. This new variable categorizes ages into six groups,
-each spanning a five-year range, from the minimum age of 33 to the
-maximum age of 62. To ensure non-overlapping bins, the initial term
-within each age group is included in the previous bin. The resulting Age
-group variable is subsequently incorporated into the original
-difference-in-differences design using interaction terms with the subway
-approval variable.
+isolate that particular effect. To align the data with my hypothesis, I
+leverage the existing Age variable in \citet{lei2022private}'s dataset
+to construct a distinct grouping variable. This new variable categorizes
+ages into six groups, each spanning a five-year range, from the minimum
+age of 33 to the maximum age of 62. To ensure non-overlapping bins, the
+initial term within each age group is included in the previous bin. The
+resulting Age group variable is subsequently incorporated into the
+original difference-in-differences design using interaction terms with
+the subway approval variable.
 
 \hypertarget{baseline-difference-in-difference-design}{%
 \section{Baseline Difference in Difference
@@ -466,14 +462,13 @@ effects.
 
 Ensuring the validity of the difference-in-differences design requires
 verifying the parallel trends assumption, which can be assessed through
-the following model specification: . In this design, we compare mayors
-who received the treatment (securing a subway approval) with those who
-did not across various cities and years. However, to establish a
-credible causal claim that obtaining a subway approval heightens the
-chances of future promotion, it is imperative to confirm that, in the
-absence of treatment, mayors who secured a subway approval would have
-followed similar trends in their future promotion prospects as those who
-did not receive the treatment.
+the following model specification:
+\[P_{ct} = \sum_{\substack{\gamma=-4 \\ \gamma \neq +1}}^{+5} \beta_{\gamma} Approval_{c(t+\gamma)} + \omega X_{ct-1} + \theta_c + \pi_t + \varepsilon_{it}\]
+To establish a credible causal claim that obtaining a subway approval
+heightens the chances of future promotion, it is imperative to confirm
+that, in the absence of treatment, mayors who secured a subway approval
+would have followed similar trends in their future promotion prospects
+as those who did not receive the treatment.
 
 \begin{figure}[tbp]
 
@@ -511,7 +506,7 @@ effects, beginning with an examination based on the mayor's tenure at
 the time of securing approval for a subway infrastructure plan. This
 analysis is encapsulated in the following ordinary least squares
 regression:
-\[P_{ct} = \alpha + \beta_{1}Approval + \beta_{2}Approval * Mayor Tenure + \gamma X_{c,t - 1} + \eta_{c} + \theta_{t} + \epsilon_{ct},\].
+\[P_{ct} = \alpha + \beta_{1}Approval + \beta_{2}Approval * Mayor Tenure + \gamma X_{c,t - 1} + \eta_{c} + \theta_{t} + \epsilon_{ct},\]
 
 \hypertarget{tbl-extension2}{}
 \begin{longtable}[]{@{}l@{}}

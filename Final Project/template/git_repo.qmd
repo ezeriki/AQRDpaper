@@ -1,0 +1,12 @@
+---
+title: "git_repo"
+author: "Ezeriki Emetonjor"
+format: pdf
+editor: visual
+---
+
+## Git Repository
+
+Below is my git repository:\
+<https://github.com/ezeriki/AQRDpaper>\
+The relevant R files include the did_extension and did_replication and summary statistics files all in my final project folder. My final paper is titled Final_paper and is located within the template sub folder of the final project folder.
