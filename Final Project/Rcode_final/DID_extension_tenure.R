@@ -19,25 +19,9 @@ library(cowplot) # also for plotting on one grid
 subway_analysis_use <- read_dta("data/subway_analysis_use.dta")
 
 
-# subway_analysis_use <- subway_analysis_use |> 
-#   mutate(age_br = case_when(Mayor_age %in% 31:35 ~ "30-35",
-#                             Mayor_age %in% 36:40 ~ "35-40",
-#                             Mayor_age %in% 41:45 ~ "40-45",
-#                             Mayor_age %in% 46:50 ~ "45-50",
-#                             Mayor_age %in% 51:55 ~ "50-55",
-#                             Mayor_age %in% 56:60 ~ "55-60",
-#                             Mayor_age %in% 61:65 ~ "60-65"))
-
-
 # First dropping vice province level cities
 sub_novice <- subway_analysis_use |>
   filter(fsj2 == 0)
-
-# releveling age brackets so that estimates are compared to 
-# age bracket 50 - 55
-# sub_novice <- sub_novice |>
-#   mutate(age_br = age_br |>
-#            fct_relevel("50-55"))
 
 
 # control variables -------------
@@ -49,52 +33,49 @@ mayor_cont <- c("gender2", "race6", "Mayor_age", "Mayor_c_edu", "Mayor_c_central
 base_cont <- c("lpop_1", "lgdp_1", "lrev_1", "GRP_growth_1")
 
 
-# converting tenure to factor
-sub_novice$tenure_group <- as.factor(sub_novice$Mayor_c_tenure)
-
 # Column one Extension -------------
 # tenure mayor plan interaction
 column_onex1 <-
   feols(
-    Mayor_promotion3y ~ Mayor_plan + Mayor_plan:Mayor_c_tenure | City_Code + Year ,
+    Mayor_promotion3y ~ Mayor_plan + Mayor_plan*Mayor_c_tenure | City_Code + Year ,
     data = sub_novice,
     cluster = "City_Code"
   )
 
-summary(column_onex1)
+#summary(column_onex1)
 
 # Column TWO Extension -------------
 # age alone
 coltwo_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan:Mayor_c_tenure +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*Mayor_c_tenure +
     {str_c(mayor_cont, collapse = ' + ')} | City_Code + Year"
   )
 column_twoex1 <- feols(as.formula(coltwo_form), 
                        sub_novice,
                        cluster = "City_Code")
 
-summary(column_twoex1)
+# summary(column_twoex1)
 
 
 # Column three Extension -------------
 # age alone
 colthree_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan:Mayor_c_tenure +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*Mayor_c_tenure +
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | City_Code + Year"
   )
 column_threex1 <- feols(as.formula(colthree_form), 
                         sub_novice,
                         cluster = "City_Code")
-summary(column_threex1)
+#summary(column_threex1)
 
 # Column four Extension -------------
 # age alone
 colfour_form <-
   glue(
-    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan:Mayor_c_tenure +
+    "Mayor_promotion3y ~ Mayor_plan + Mayor_plan*Mayor_c_tenure +
     {str_c(mayor_cont, collapse = ' + ')} +
     {str_c(base_cont, collapse = ' + ')} | 
     City_Code + Year:pro_code"
@@ -102,7 +83,7 @@ colfour_form <-
 column_fourex1 <- feols(as.formula(colfour_form), 
                         sub_novice,
                         cluster = "City_Code")
-summary(column_fourex1)
+#summary(column_fourex1)
 
 
 # Regression tables ----
@@ -116,7 +97,8 @@ reg_cols <- list("Model1" = column_onex1,
 #variable renaming
 coefficient_names <- list(
   'Mayor_plan' = 'Subway Approval',
-  'Mayor_plan:Mayor_c_tenure' = 'Subway Approval + Mayor Tenure'
+  'Mayor_c_tenure' = 'Mayor Tenure',
+  'Mayor_plan:Mayor_c_tenure' = 'Subway Approval * Mayor Tenure'
 )
 
 summary_row <- tribble(
@@ -155,7 +137,7 @@ model_table <-
 gt_table <- model_table$`_data`
 # moving number of observations to bottom row
 gt_table <- gt_table |>
-  arrange(replace(row_number(), 5, n() + 1))
+  arrange(replace(row_number(), 7, n() + 1))
 
 # creating checkmarks -------------------------
 checkmark <- "<span style=\"color:black\">&check;</span>"
@@ -218,7 +200,7 @@ extension_tenure |>
 # model 1 plot
 model1 <- plot_slopes(column_onex1,
                       variables = "Mayor_plan",
-                      condition = "Mayor_c_tenure") +
+                      condition = "Mayor_plan:Mayor_c_tenure") +
   xlab("Interaction between Mayor plan and tenure") +
   ylab("Mayor Promotion in 3 years") +
   theme(axis.title = element_text(size = 10, face = 3))
@@ -258,7 +240,7 @@ grid.arrange(model1, model2, model3, ncol = 1)
 model1 <- plot_slopes(column_onex1,
                       variables = "Mayor_plan",
                       condition = "Mayor_c_tenure") +
-  theme_cowplot() +
+  theme_bw() +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
@@ -267,17 +249,28 @@ model1 <- plot_slopes(column_onex1,
 model2 <- plot_slopes(column_twoex1,
                       variables = "Mayor_plan",
                       condition = "Mayor_c_tenure") +
-  theme_cowplot() +
+  theme_bw() +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank())
 
+?plot_slopes
 #model 3 plot
 model3 <- plot_slopes(column_threex1,
                       variables = "Mayor_plan",
                       condition = "Mayor_c_tenure") +
-  theme_cowplot() +
+  theme_bw() +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank())
+
+
+# model4 <- plot_slopes(column_fourex1,
+#                       variables = "Mayor_plan",
+#                       condition = "Mayor_c_tenure") +
+#   theme_cowplot() +
+#   theme(axis.title.y = element_blank(),
+#         axis.title.x = element_blank())
+
+# ---------------- old grid arrange-------------
 #?theme
 #?plot_slopes
 #?scale_y_continuous
@@ -299,31 +292,61 @@ model3 <- plot_slopes(column_threex1,
 
 #?textGrob
 #?gpar
-
-#library(cowplot)
-# using cowplot
-plot_tenure <- plot_grid(
-  model1, model2, model3,
-  labels = c('A', 'B', 'C'),
-  align="vh"
-)
+# ---------------- end of old grid arrange-------------
 
 
 # LAbels and titles
-main_title = textGrob("Marginal Effects Based on Mayor Tenure", 
-               vjust = 1, gp = gpar(fontfamily = "serif", 
-                                    fontface = "bold",
-                                    cex = 1))
-y.grob <- textGrob("Mayor Promoted in 3 years", 
+main_title = textGrob("Marginal Effects Based on Mayor Tenure",
+                      gp = gpar(fontfamily = "serif", 
+                                fontface = "bold",
+                                cex = 1))
+y.grob <- textGrob("Effect of Approval on Mayor's future Promotion", 
                    gp=gpar(fontfamily = "serif", fontsize=13), rot=90)
-x.grob <- textGrob("Interaction between Subway Approval and Mayor Tenure", 
+x.grob <- textGrob("Mayor Tenure", 
                    gp=gpar(fontfamily="serif", fontsize=13))
 
-#add to plot
+# using cowplot plot grid
+plot_tenure <- plot_grid(
+  model1, model2, model3,
+  labels = c('A', 'B', 'C'),
+  align="v",
+  label_size = 12,
+  label_fontfamily = "serif",
+  label_x = -0.025,
+  label_y = 1.0325
+)
+
+#add to plot to label x and y axes
 grid.arrange(arrangeGrob(plot_tenure, top = main_title, 
                          left = y.grob, bottom = x.grob))
 
 
+# Tenure Histogram chart --------------
+ggplot(data = sub_novice, aes(x = Mayor_c_tenure)) +
+  geom_histogram(binwidth = 1, fill = "blue", 
+                 color = "black", alpha = 0.7) +
+  labs(x = "Years of Tenure", y = "Frequency",
+       title = "Distribution of Mayor's Tenure") +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 12, family = "serif"),  # Adjust axis text font size and style
+    axis.title = element_text(size = 12, family = "serif"),  # Adjust axis title font size and style
+    plot.title = element_text(size = 15, family = "serif",
+                              face = "bold", hjust = 0.5)  # Adjust plot title font size, style, and center it
+  )
+
+
+#using egg
+# install.packages("egg")
+# library(egg)
+# 
+# 
+# figure <- egg::ggarrange(model1, model2, 
+#                          model3, 
+#                          nrow = 2,
+#                          labels=c("A", "B", "C"),
+#                          label.args = list(gp=gpar(font=2), x=unit(.5,"line")))
+# figure
 
 # Outliers -------------
 sub_novice_6 <- sub_novice |>

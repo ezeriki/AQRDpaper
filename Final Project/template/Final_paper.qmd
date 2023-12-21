@@ -1,0 +1,130 @@
+---
+title: "Political Exchange Dynamics: Unveiling Heterogeneous Effects on City Mayor Promotion Prospects in China"
+author: "Ezeriki Emetonjor"
+format:
+  cmc-article-pdf:
+    fontsize: 12pt
+    margin-left: 1.5in
+    margin-right: 1.5in
+    margin-bottom: 1.2in
+    margin-top: 1.2in
+    keep-tex: true
+    fig-pos: 'tbp'
+    tbl-pos: 'tbp'
+    linkcolor: 'blue'
+    include-in-header: header.tex
+header-includes:
+   \usepackage{float}
+   \floatplacement{table}{H}
+bibliography: bibliography.bib
+abstract: | 
+  This research investigates heterogeneous effects within a political exchange paradigm operative in Chinese local political frameworks involving Provincial Party Secretaries (PPS) and City Mayors. Expanding on previous investigations that showed how this political exchange affects higher infrastructure spending in China relative to other countries, this study specifically centers on subway infrastructure as a conduit facilitating the alignment of objectives between PPS and city mayors, thereby augmenting their prospects for future career advancements. My findings reveal statistically significant differences in the efficacy of securing subway project approvals in relation to tenure, which can greatly influence the promotion likelihood of city mayors in China. Furthermore, my study confirms that there are no statistically significant differences based on age. 
+---
+
+{{< pagebreak >}}
+
+
+# Introduction
+Within the scope of this investigation, I identify divergent effects inherent in a political exchange model, catalyzing economic development in the localities served by participating politicians. This intricate interplay not only fosters public good provision but also yields private advantages in terms of enhanced promotion prospects for the involved parties. The government's pivotal role in furnishing public goods, particularly substantial ones with broad societal impact, is well-acknowledged. Yet, at the local level, such as in cities, the investment trajectory in large-scale public goods, like infrastructure projects, is often misaligned with the typical tenure of local political leaders. 
+
+Addressing this incompatibility, @lei2022private conducted an exploration of China's city politics, where this disjunction appears notably absent. Their study delves into the nuanced political transactions between Provincial Party Secretaries (PPS) and City Mayors, demonstrating a clear association with significantly higher public infrastructure investments in China as compared to other countries. [@lei2022private]. Their study focuses specifically on subway infrastructure, given its integral role in fostering economic growth, the direct participation of city mayors, and the constrained contracting dynamics that span across cities and time, contingent upon the mayors' capabilities. One relevant question that emerges from this study concerns the varying benefits and drawbacks that different kinds of politicians encounter when they participate in these kinds of political interactions. Two categories that require careful examination and that demonstrate related dynamics are age and tenure.
+
+Initially, with a focus on tenure as a pivotal element in this political exchange paradigm, @guo2009china investigates the behavior of county-level political leaders in China. The study reveals a tendency for increased spending on economically beneficial projects during crucial junctures in their careers, particularly in the tenure year with elevated prospects of promotion, notably in the third and fourth years of their term. In the context of authoritative governance, as observed in China, politicians' immediate superiors hold the majority of political influence when it comes to appointing new leaders [@lei2022private; @guo2009china]. Consequently, the generation of positive economic outcomes through large-scale public initiatives functions as a potent signal of the competence and deserving promotion of local politicians to their superiors; this highlights the effectiveness of these signals in comparison to potentially biased markers such as personality traits or prior experiences, which might not be able to accurately predict future abilities [@guo2009china]. 
+
+Given the framework established by the @lei2022private study, I anticipate a substantial influence of a city mayor's tenure on subway infrastructure investment, subsequently impacting their prospects for future promotion. Consequently, this investigation delves into the interplay between a mayor's tenure and the successful approval of a subway infrastructure project. Notably, my findings highlight that city mayors with tenure spanning up to three or four years, coupled with the attainment of subway project approvals, experience the highest likelihood of promotion. This alignment with a political cycle framework underscores the strategic nature of engaging in local-level investments during periods offering the greatest prospects for promotion, as specified in prior research [@guo2009china]. 
+
+An additional pertinent factor to consider is age, which holds significant relevance in the broader context of political representation. The global trend of citizens favoring candidates who share similar characteristics is a critical aspect, as highlighted by @sevi2021young. This preference is grounded in the belief that candidates with similarities are more inclined to act in the best interests of the citizens and champion policies beneficial to their specific demographic. Various dimensions contribute to measures of representation, including ethnicity, race, and age, as elucidated by @sevi2021young. Building upon this, the work of @lei2022private provides a valuable case study to empirically test the hypothesis that voters, or in the context of the Chinese authoritarian system, those influencing the promotion of political leaders, are more inclined to select individuals with whom they share similarities.
+
+Consequently, age proves to be a compelling demographic variable for examination within the framework of the @lei2022private study, given its dynamic nature that evolves over time. This sets it apart from other human traits such as gender or ethnicity [@stockemer2018age]. According to @stockemer2018age, middle-aged and wealthy people often make up the global political elite. This presents a noteworthy challenge because, just as age evolves, so do ideologies, beliefs, and perspectives on life. Consequently, young adults often find themselves at odds with older generations regarding policy and political solutions, experiencing inadequate representation by their governments in the current state of affairs [@stockemer2018age]. The @lei2022private study offers an avenue to explore whether age groups falling outside the conventional realm of "politician age" are disadvantaged in this political market system.
+
+Building upon the context established in the preceding paragraphs, an interplay between tenure and age becomes apparent. Younger politicians are predisposed to having fewer tenure years, and for those just commencing their careers, they might find themselves a few years ahead of the conventional promotion schedule. Consequently, securing infrastructure projects may not wield decisive influence over their promotion prospects. Moreover, additional hurdles may hinder their advancement, such as the perceived inexperience commonly associated with their age. In contrast, senior politicians encounter a diametric challenge, facing an imminent deadline to demonstrate tangible results during their remaining time in office. However, the extensive tenure of older leaders, coupled with their perceived experience and age-related affinity with political superiors, may render it less challenging for them to secure opportunities, such as infrastructure contracts, thereby enhancing their prospects of promotion. Nevertheless, as underscored by @guo2009china, there exists a potential downside to investing in significant public projects during extended tenures, as it may coincide with missing optimal promotion periods. Additionally, age discrimination may manifest, with the negative impact of being deemed too old working against their promotion prospects. Consequently, it is plausible to anticipate that middle-aged city mayors, strategically aligning with the peak promotion tenured years, would generally exhibit the highest likelihood of promotion, attributed to their successful endeavors in obtaining approval for subway projects. 
+The paper further details the analysis of data from @lei2022private, using the difference-in-differences design to estimate the causal impact of subway approval on a city mayor's promotion prospects. It also extends the design to uncover heterogeneous differences within crucial indicators like tenure and age.  
+
+# Data & Analysis
+This study specifically examines the impact of obtaining approval for a subway infrastructure plan on a city mayor's future promotion prospects. The examination draws upon data obtained from the @lei2022private study, utilizing sources such as the China City Statistical Yearbook, China Urban Construction Yearbook, Chinese Political Elite Database, among others. These sources collectively compile information on city-level infrastructure projects, demographic characteristics, and the past educational and professional experiences of city mayors and PPS officials [@lei2022private]. @tbl-statsumm provides a snapshot of some important mayor and city characteristics.
+
+
+|                         |
+|:------------------------|
+| ![](tables\final_summ_stat.png) |
+
+: Summary Statistics {#tbl-statsumm}
+
+I replicate the difference-in-differences design from @lei2022private and extend it with a focus on heterogeneous effects related to tenure and age. To capture the nuanced interaction between tenure, subway approvals, and future promotion, I introduce an interaction term with the independent variable of interest—Mayor's subway approval for that city in that year—allowing for an examination of how the impact of subway approvals varies across different tenures.
+
+![Age distribution of Provincial Party Secretaries and City Mayors ](figures\age_distribution2.png){#fig-agedist width="60%"}
+
+Concerning age and its interplay with tenure, the distribution of age for both PPS and city mayors is visualized by @fig-agedist. Notably, the age distribution overlap occurs predominantly within the range of 45 to 59 years, with a concentration between 48 and 56 years. Consequently, it is anticipated that city mayors falling within this age group, closer in age to PPS counterparts, would exhibit higher chances of promotions, aligning with the earlier hypothesis. Specifically, this connection may be linked to a significant portion of individuals within this age bracket concurrently being in their 3rd or 4th years in office, a period associated with elevated promotion probabilities. To ascertain the specific effect of the interaction between age and subway approvals on future promotions, controlling for tenure becomes crucial in order to isolate that particular effect.
+
+To align the data with my hypothesis, I leverage the existing Age variable in @lei2022private's dataset to construct a distinct grouping variable. This new variable categorizes ages into six groups, each spanning a five-year range, from the minimum age of 33 to the maximum age of 62. To ensure non-overlapping bins, the initial term within each age group is included in the previous bin. The resulting Age group variable is subsequently incorporated into the original difference-in-differences design using interaction terms with the subway approval variable.  
+
+# Baseline Difference in Difference Design
+The difference-in-differences design proposed by @lei2022private can be expressed through an ordinary least squares regression: 
+ $$P_{ct} = \alpha + \beta_{1}Approval + \gamma X_{c,t - 1} + \eta_{c} + \theta_{t} + \epsilon_{ct},$$ where $P_{ct}$ denotes the future promotion of the city mayor in 3 years for city c in year t. The City fixed effects ($\eta_{c}$) capture any time-invariant characteristics specific to each city that may influence a mayor's future promotion. Year fixed effects account for city-invariant characteristics unique to a particular year that could also impact a mayor's chances of future promotion. This forms the foundation of the difference-in-differences design, enabling a causal assertion that subway approval independently affects the future promotion prospects of a city mayor.
+ 
+ |                         |
+|:------------------------|
+| ![](tables\did_replication.png) |
+
+: Replication of @lei2022private Difference in Difference design {#tbl-replication}
+
+The results presented in @tbl-replication illustrate the key findings of the original difference-in-differences design by @lei2022private. These results indicate a statistically significant positive effect between a mayor securing approval for subway infrastructure and their promotion within 3 years, across all specifications of the design with increasing levels of controls.
+
+On the base level, only including the fixed effects across city and time, a mayor who has secured an approval for a subway construction will see their chances of promotion in 3 years increase by 25 percentage points, which is quite economically significant. The other specifications also fall into this range of treatment effect, with the lowest effect coming in when the model includes Province year fixed effects.
+
+Ensuring the validity of the difference-in-differences design requires verifying the parallel trends assumption, which can be assessed through the following model specification: . In this design, we compare mayors who received the treatment (securing a subway approval) with those who did not across various cities and years. However, to establish a credible causal claim that obtaining a subway approval heightens the chances of future promotion, it is imperative to confirm that, in the absence of treatment, mayors who secured a subway approval would have followed similar trends in their future promotion prospects as those who did not receive the treatment. 
+
+![Replication of @lei2022private Leads and Lags Effect of Subway Approval on Future Promotion](figures\parallel_trends.png){#fig-parallel width="70%"}
+
+Visualization of this concept through leads and lags, as depicted in @fig-parallel, provides insights into the alignment of trends among treated and untreated groups, substantiating the parallel trends assumption. The leads serve as a placebo test to determine if future treatment has any effect on present outcome, while lags represents the effect of past treatment of present outcome. As evident from @fig-parallel, wherein the year preceding the actual treatment year serves as a baseline, the leads—extending up to five years into the future—exhibit no statistically significant effect on present outcomes. Notably, the estimate for the 4-year lead, although showing an effect of approximately 0.15 (15 percentage points) on future promotion, does not attain statistical significance. @fig-parallel also shows us that securing a subway approval in the past has a lasting effect on the promotion prospects of the city mayors.
+
+
+# Heterogenous Effects Results I: Tenure 
+I expand upon Lei & Zhou's study by investigating heterogeneous effects, beginning with an examination based on the mayor's tenure at the time of securing approval for a subway infrastructure plan. This analysis is encapsulated in the following ordinary least squares regression: $$P_{ct} = \alpha + \beta_{1}Approval + \beta_{2}Approval * Mayor Tenure + \gamma X_{c,t - 1} + \eta_{c} + \theta_{t} + \epsilon_{ct},$$. 
+
+|                         |
+|:------------------------|
+| ![](tables\extension_tenure.png) |
+
+: Heterogeneous Effects Based on Tenure {#tbl-extension2}
+
+@tbl-extension2 shows the main results, from which we can see that a mayor's tenure has a statistical significant effect on their chances of future promotion through all specification of the difference in difference model. This effect manifests as an increase ranging from approximately 4.7 to 5.8 percentage points in the likelihood of future promotion. It also shows us the effect of securing a subway approval when a city mayor when a city mayor is in the initial stages of their tenure (in other words, the coefficients on both the Mayor Tenure and interaction term variables are zero). In these instances, the effects are positive, spanning from 10.8 to 13.1 percentage points in increased likelihood.
+
+To discern the statistically significant effects of the specific interaction between securing a subway approval and tenure, @fig-tenuremarg illustrates the marginal effects of subway approval based on tenure years, encompassing the first three models. This visualization consistently portrays a positive effect of the interaction between subway approval and tenure. Notably, mayors at the outset of their careers, with minimal tenured experience, exhibit small positive effects on future promotion when securing a subway approval, though these effects are not statistically significant. As tenured years increase, so does the impact of securing a subway approval on future promotion. In fact, once a mayor surpasses 2.5 years in their position, these positive effects become statistically significant, indicating an increased likelihood of approximately 24 percentage points for future promotion. This aligns with the earlier hypothesis suggesting that city mayors stand a greater chance of promotion when they successfully secure a subway approval during critical junctures in their careers, specifically in their third and fourth tenure years. What's even more intriguing is that the effect doubles to around a 50 percentage point increase in probability after ten years of service. This contradicts the previous notion that older politicians might face age discrimination, as they could be considered too old for subsequent promotions.
+
+
+![Marginal Effects Plot Based on Interaction of Subway Approval with Mayor Tenure ](figures\marginaleffect_tenure.png){#fig-tenuremarg width="70%"}
+
+
+
+The tenure distribution, illustrated in @fig-tendist, allows for a visual identification of the most relevant effect for the majority of the data. The graph indicates that a significant portion of the data falls within the 0 to 4 years of tenure range, implying potential effects of subway approval ranging from 0 to 27 percentage points. Consequently, a substantial segment of the sample aligns closely with the hypothesis that city mayors in their 3rd or 4th years have increased chances of promotion when securing approval for a subway plan, experiencing a noteworthy boost in their likelihood by 24 to 31 percentage points. In contrast, city mayors with less than 3 years in office do not experience a notable increase in their promotion prospects, even upon securing a subway approval. Interestingly, these results highlight the fact that long-serving municipal mayors continue to benefit from securing a subway approval, although such officials are infrequent, as evident from the extended right tail observed in the distribution plot. In summary, this study reveals significant heterogeneous effects of subway approval on future promotion, contingent on tenure, with the most pronounced impact observed for city mayors during pivotal tenure years when they have the highest likelihood of promotion.
+
+
+![Distribution of Mayor Tenure ](figures\tenure_dist.png){#fig-tendist width="70%"}
+
+
+# Heterogenous Effects Results II: Age 
+I explore a different form of heterogeneity based on the average age of city mayors, as shown by the following regression using ordinary least squares: $$P_{ct} = \alpha + \beta_{1}Approval + \beta_{2}Approval * Age group + \gamma X_{c,t - 1} + \eta_{c} + \theta_{t} + \epsilon_{ct},$$ 
+
+@tbl-extension presents the primary outcomes of this extension. Within the baseline group, securing a subway approval markedly increased promotion chances by 27.5 percentage points, demonstrating statistical significance and aligning with the findings of the @lei2022private paper. The age groups of 30-35 and 35-40 were excluded from the final model results due to a lack of observations receiving the treatment, resulting in their interaction coefficients being zero and subsequently dropped. While all other age groups, excluding the 40-45 age group, exhibit lower chances in comparison, none of these differences achieve statistical significance. Within the age group 40-45, obtaining approval for subway construction in their city yielded a detrimental impact on their likelihood of promotion in the subsequent 3 years. To quantify, securing a subway approval decreased their chances of promotion by 11.7 percentage points, and this effect attains statistical significance across most specifications of the design. However, it loses statistical significance when the model incorporates province-year fixed effects, although the effect remains negative. 
+
+|                         |
+|:------------------------|
+| ![](tables\did_extension.png) |
+
+: Heterogeneous Effects Based on Age {#tbl-extension}
+
+
+To ensure that the observed significant effects were not influenced by outliers, I conducted a data filtration based on age groups. This analysis aimed to assess the number of observations within each group and determine how many actually received the treatment of securing a subway approval. Upon investigation, I discovered that the statistical differences observed in the 40-45 age group were primarily driven by a single outlier, constituting only 1 observation out of a total of 410 observations within that group, representing approximately 0.2% of the total. In contrast, other age groups comprised 250 to 1480 observations, with approximately 2-3% receiving the treatment. Consequently, based on this examination, I refrain from concluding that there is substantial heterogeneity among the City Mayors included in this study based on age.
+
+# Conclusion
+In conclusion, this study has successfully identified statistically significant heterogeneous effects within the political exchange model in Chinese local political systems, specifically focusing on the influential factors of tenure and age. The results indicate a significant variance in the effectiveness of securing subway approvals based on tenure, with substantial implications for the promotion prospects of city mayors in China. Notably, no statistically significant differences were observed based on age, emphasizing the nuanced nature of political dynamics.
+
+Moving forward, there are promising avenues for further exploration. Future research endeavors could extend this study by examining whether similar heterogeneity exists for other infrastructure projects in China or within different political exchange models in various countries. Exploring these dimensions would not only contribute to a more comprehensive understanding of political dynamics but also shed light on the generalization of the findings beyond the scope of the current study. Such investigations hold the potential to unveil broader patterns and insights into the complex interplay between political exchanges, tenure, and age in diverse political landscapes.
+
+{{< pagebreak >}}
+
+
+
+::: {#refs}
+:::

@@ -277,7 +277,7 @@ model_table <- modelsummary(reg_cols,
 ms_notes <- "* p < 0.05, ** p < 0.01, *** p < 0.001
 <br>Standard Errors clustered at the city level in parentheses.
 <br>Mayor Controls include gender, ethnicity, past political connections, and univeristy experience.
-<br>City controls include GDP size and growth, fiscal revenue, and population.
+<br>City controls include lagged GDP size and growth, fiscal revenue, and population.
 <br>FE: Fixed Effects"
 
 
@@ -397,11 +397,19 @@ sub_dist_long <- sub_dist |>
 
 ggplot(sub_dist_long, aes(x = value, fill = Age_group)) + 
   geom_density(alpha = 0.5) +
-  labs(y = "Density", x = "Age") +
-  scale_color_manual(name="",
-                     values=c("black","blue"),
-                     labels=c("Mayor Age","PPS Age")) +
-theme_bw()
+  labs(y = "Density", x = "Age",
+       title = "Distribution of PPS and Mayor Age") +
+  scale_fill_discrete(name = "Age Group", 
+                      labels = c("Mayor Age", "PPS Age")) +
+theme_bw() +
+  theme(
+    axis.text = element_text(size = 12, family = "serif"),  # Adjust axis text font size and style
+    axis.title = element_text(size = 12, family = "serif"),  # Adjust axis title font size and style
+    plot.title = element_text(size = 15, family = "serif",
+                              face = "bold", hjust = 0.5),
+    legend.title = element_text(size = 10, family = "serif"),
+    legend.text = element_text(family = "serif")# Adjust plot title font size, style, and center it
+  )
 
 
 
